@@ -1,0 +1,7 @@
+[tool.poetry]
+name = "foundry"
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+include = '\.pyi?$'
