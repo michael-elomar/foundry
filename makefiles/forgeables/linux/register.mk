@@ -2,8 +2,10 @@ $(call module-add)
 
 LINUX_BUILD_DIR := $(OBJ_DIR)/$(LOCAL_MODULE)
 
-KERNEL_ARCHIVE_LINK := https://cdn.kernel.org/pub/linux/kernel/
-KERNEL_SRC_FOLDER := linux-$(TARGET_OS_VERSION)
+ifndef TARGET_KERNEL_ARCHIVE_LINK
+KERNEL_ARCHIVE_NAME := linux-$(TARGET_OS_VERSION).tar.xz
+TARGET_KERNEL_ARCHIVE_LINK := https://cdn.kernel.org/pub/linux/kernel/v$(TARGET_OS_MAJOR_VERSION).x/$(KERNEL_ARCHIVE_NAME)
+endif
 
 # LINUX_SRCARCH is the name of the sub-directory in linux/arch
 ifeq ("$(TARGET_ARCH)","x64")
@@ -45,8 +47,8 @@ LINUX_MAKE_ARGS := \
 	DEPMOD="$(LINUX_DEPMOD)"
 
 __download_kernel = \
-	$(shell wget -nc -P $(BUILD_DIR) $(KERNEL_ARCHIVE_LINK)/v$(TARGET_OS_MAJOR_VERSION).x/$(KERNEL_SRC_FOLDER).tar.xz) \
-	$(shell tar -xf $(BUILD_DIR)/$(KERNEL_SRC_FOLDER).tar.xz -C $(BUILD_DIR))
+	$(shell wget -nc -P $(BUILD_DIR) $(TARGET_KERNEL_ARCHIVE_LINK)) \
+	$(shell tar -xf $(BUILD_DIR)/$(KERNEL_ARCHIVE_NAME) -C $(BUILD_DIR))
 
 linux-copy-image = \
 	$(if $(call streq,$(LINUX_IMAGE),$1), \
