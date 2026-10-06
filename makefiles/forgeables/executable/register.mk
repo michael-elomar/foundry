@@ -1,8 +1,8 @@
 $(call module-add)
 
-__mod := $(LOCAL_MODULE)
+$(info adding $(LOCAL_MODULE))
 
 $(foreach __var,$(vars-LOCAL), \
-	$(eval __modules.$(__mod).$(__var) := $(LOCAL_$(__var)))\
+	$(eval __modules.$(LOCAL_MODULE).$(__var) := $(LOCAL_$(__var))) \
 )
 

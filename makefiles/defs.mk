@@ -46,7 +46,6 @@ __convert_to_obj = $(strip \
 ))
 
 __create_dirs = \
-	$(info Preparing build directories) \
 	$(foreach _dir,$1,\
 		$(shell mkdir -p $(_dir)) \
 )
@@ -124,4 +123,8 @@ endef
 
 define __get_extension
 	echo $(suffix $1)
+endef
+
+define __download_package
+	@wget -P $2 $1
 endef

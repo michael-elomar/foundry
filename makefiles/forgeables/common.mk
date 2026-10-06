@@ -1,23 +1,33 @@
 $(call __check-local-vars $(FORGE_MK))
 
-OUT_DIR := out
+OUT_DIR := $(WORKSPACE)/out
 
 BUILD_DIR := $(OUT_DIR)/build
 
 STAGING_DIR := $(OUT_DIR)/staging
 
+ETC_DIR := $(STAGING_DIR)/etc
+
+USR_DIR := $(STAGING_DIR)/usr
+
 OBJ_DIR := $(BUILD_DIR)/obj
 
-BIN_DIR := $(STAGING_DIR)/bin
+BIN_DIR := $(USR_DIR)/bin
+SBIN_DIR := $(USR_DIR)/sbin
 
-LIB_DIR := $(STAGING_DIR)/lib
+LIB_DIR := $(USR_DIR)/lib
+SLIB_DIR := $(USR_DIR)/slib
+
+INCLUDE_DIR := $(USR_DIR)/include
 
 DIRS := \
 	$(OUT_DIR) \
 	$(BUILD_DIR) \
 	$(STAGING_DIR) \
 	$(OBJ_DIR) \
+	$(USR_DIR) \
 	$(BIN_DIR) \
+	$(INCLUDE_DIR) \
 	$(LIB_DIR)
 
 $(call __create_dirs,$(DIRS))
@@ -59,3 +69,15 @@ _external_add_LDFLAGS := \
 	$(LOCAL_LDFLAGS) \
 	$(LOCAL_LDPATHS) \
 	$(LOCAL_LDLIBS)
+
+# To be able to use ccache with pre-compiled headers, some environment
+# variables are required
+CCACHE :=
+ifeq ("$(USE_CCACHE)","1")
+  ifneq ("$(shell which ccache 2>/dev/null)","")
+    export CCACHE_SLOPPINESS := time_macros
+    CCACHE := ccache
+    TARGET_GLOBAL_CFLAGS += -fpch-preprocess
+    HOST_GLOBAL_CFLAGS += -fpch-preprocess
+  endif
+endif

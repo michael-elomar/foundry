@@ -3,28 +3,36 @@
 # the macros that could be called by the forge.mk file
 
 # ========== Utility Variables ===========
-MAKEFILES := $(BUILD_SYSTEM)/makefiles
-FORGEABLES := $(MAKEFILES)/forgeables
+MK_FILES := $(BUILD_SYSTEM)/makefiles
+FORGEABLES := $(MK_FILES)/forgeables
 
 # ========== General include =============
-include $(MAKEFILES)/vars.mk
-include $(MAKEFILES)/defs.mk
+include $(MK_FILES)/vars.mk
+include $(MK_FILES)/defs.mk
 
 # ========== General variables ===========
-CLEAR_VARS := $(MAKEFILES)/clearvars.mk
-
+CLEAR_VARS := $(MK_FILES)/clearvars.mk
 
 # ========== Build variables =============
-
 FORGE_EXECUTABLE := $(FORGEABLES)/executable/register.mk
+RULES_EXECUTABLE := $(FORGEABLES)/executable/rules.mk
+
 FORGE_LIBRARY := $(FORGEABLES)/library/register.mk
 FORGE_SHARED_LIBRARY := $(FORGEABLES)/shared_library/register.mk
 FORGE_STATIC_LIBRARY := $(FORGEABLES)/static_library/register.mk
 
-include $(FORGE_MK)
+FORGE_LINUX := $(FORGEABLES)/linux/register.mk
+RULES_LINUX := $(FORGEABLES)/linux/rules.mk
 
-$(info $(__modules))
-$(foreach __mod,$(__modules), \
-	$(foreach __var,$(vars-LOCAL), \
-		$(info __modules.$(__mod).$(__var): $(__modules.$(__mod).$(__var))) \
-))
+include $(FORGEABLES)/common.mk
+
+# include the product makefile and do the necessary steps
+include product.mk
+$(foreach __forge_mk,$(FORGE_MK_FILES), \
+	$(info $(__forge_mk)) \
+	$(eval include $(__forge_mk)) \
+)
+
+include $(FORGEABLES)/rules.mk
+
+all: $(__modules)
