@@ -1,9 +1,8 @@
-$(call __download_kernel)
-
 .PHONY: linux-config
 linux-config:
+	$(call __download_kernel)
 	@echo "Configuring Linux Kernel"
-	$(Q) $(MAKE) $(LINUX_MAKE_ARGS) defconfig
+	$(Q) $(MAKE) $(LINUX_MAKE_ARGS) $(TARGET_KERNEL_CONFIG)
 
 .PHONY: linux
 linux: linux-config
@@ -17,6 +16,7 @@ linux: linux-config
 	@mkdir -p $(STAGING_DIR)/boot
 	$(call linux-copy-images)
 	$(Q) $(MAKE) $(LINUX_MAKE_ARGS) dtbs_install
+	$(Q) $(MAKE) $(LINUX_MAKE_ARGS) headers_install
 	$(Q) cp -af $(LINUX_BUILD_DIR)/vmlinux $(STAGING_DIR)/boot
 	$(Q) cp -af $(LINUX_BUILD_DIR)/.config $(LINUX_BUILD_DIR)/linux.config
 	$(Q) echo "$(LINUX_ARCH)" > $(LINUX_BUILD_DIR)/linuxarch
