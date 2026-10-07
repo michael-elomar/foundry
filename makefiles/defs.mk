@@ -49,6 +49,10 @@ __create_dirs = \
 	$(foreach _dir,$1,\
 		$(shell mkdir -p $(_dir)) \
 )
+
+__copy_skel = \
+	$(shell cp -r $(1)/* $(STAGING_DIR))
+
 # Get the path of the current directory from which 'forge' is being called
 my-path = $(shell pwd)
 

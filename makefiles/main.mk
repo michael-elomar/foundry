@@ -24,6 +24,9 @@ FORGE_STATIC_LIBRARY := $(FORGEABLES)/static_library/register.mk
 FORGE_LINUX := $(FORGEABLES)/linux/register.mk
 RULES_LINUX := $(FORGEABLES)/linux/rules.mk
 
+FORGE_BUSYBOX := $(FORGEABLES)/busybox/register.mk
+RULES_BUSYBOX := $(FORGEABLES)/busybox/rules.mk
+
 include $(FORGEABLES)/common.mk
 
 # include the product makefile and do the necessary steps
