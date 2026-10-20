@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#! /usr/bin/env python3
 """
 mkimg.py - build FAT32 and ext2 filesystem images from scratch, pure Python.
 

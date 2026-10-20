@@ -39,3 +39,5 @@ $(foreach __forge_mk,$(FORGE_MK_FILES), \
 include $(FORGEABLES)/rules.mk
 
 all: $(__modules)
+
+include $(MK_FILES)/image.mk
