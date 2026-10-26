@@ -6,6 +6,7 @@ import argparse
 
 from utils import SECTOR, size_to_sectors
 import fat32
+import extfs
 import offset_file
 
 
@@ -60,13 +61,17 @@ def main(argv=None):
         file.truncate(disk_image.total_size * SECTOR)
         file.write(disk_image.toBytes())
 
-        boot_partition = offset_file.OffsetFile(file, 2048 * SECTOR, 204800 * SECTOR)
+        boot_partition = offset_file.OffsetFile(file, 2048 * SECTOR, 1024000 * SECTOR)
         fat32_fs = fat32.Fat32(boot_partition, 2048)
         fat32_fs.format(label="BOOT_PARTITION")
-
         fat32_fs.add_tree(dirs[0])
-
         fat32_fs.close()
+
+        roots_partition = offset_file.OffsetFile(file, 1026048 * SECTOR, 2045952 * SECTOR)
+        ext2_fs = extfs.Ext2(roots_partition)
+        ext2_fs.format(label="Linux")
+        ext2_fs.add_tree(dirs[1])  # tree structure preserved
+        ext2_fs.close()
 
 
 if __name__ == "__main__":

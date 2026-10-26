@@ -41,7 +41,7 @@ class MBRDiskImage:
         self.disk_id = disk_id
         self.start = 2048  # MBR constant
         self.mbr_entries: list[MBREntry] = []
-        self.total_size = 0  # in sectors
+        self.total_size = 1  # in sectors
         self.buildMBR()
 
     def buildMBR(self) -> list[MBREntry]:
