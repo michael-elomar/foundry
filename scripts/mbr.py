@@ -1,5 +1,5 @@
 import struct
-from utils import SECTOR, size_to_sectors
+from utils import SECTOR_SIZE, size_to_sectors
 
 DEADBEEF = 3735928559
 START_SECTOR = 2048
@@ -31,7 +31,7 @@ class MBREntry:
         )
 
     @classmethod
-    def createEntry(cls, format: str, sectors: int, start: int, bootable: bool = False) -> MBREntry:
+    def createEntry(cls, format: str, sectors: int, start: int, bootable: bool = False):
         return MBREntry(start, sectors, FORMATS[format], bootable)
 
 
@@ -54,7 +54,7 @@ class MBRDiskImage:
         return self.mbr_entries
 
     def toBytes(self) -> bytes:
-        mbr_array = bytearray(SECTOR)
+        mbr_array = bytearray(SECTOR_SIZE)
         mbr_array[440:446] = struct.pack("<I", self.disk_id)
         for i, entry in enumerate(self.mbr_entries):
             # fill the current 16 bytes reserved for

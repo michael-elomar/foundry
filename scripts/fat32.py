@@ -58,7 +58,7 @@ class Fat32:
 
     # ---- formatting -------------------------------------------------------
     def format(self, label="NO NAME", oem=b"PYFAT32 ", volume_id=0x1234ABCD):
-        total = self.dev.size // SECTOR
+        total = self.dev.size // SECTOR_SIZE
         reserved, nfats = 32, 2
 
         # Pick the largest cluster size that still leaves >= 65525 clusters,
@@ -67,7 +67,7 @@ class Fat32:
             fatsz = 1
             while True:
                 clusters = (total - reserved - nfats * fatsz) // spc
-                needed_fatsz = _ceil_div((clusters + 2) * 4, SECTOR)
+                needed_fatsz = _ceil_div((clusters + 2) * 4, SECTOR_SIZE)
                 if needed_fatsz <= fatsz:
                     break
                 fatsz = needed_fatsz
@@ -78,7 +78,7 @@ class Fat32:
 
         self.total, self.reserved, self.nfats = total, reserved, nfats
         self.spc, self.fatsz, self.clusters = spc, fatsz, clusters
-        self.cluster_bytes = spc * SECTOR
+        self.cluster_bytes = spc * SECTOR_SIZE
         self.data_start = reserved + nfats * fatsz  # in sectors
 
         # In-memory FAT: [0]=media, [1]=clean flags, [2]=root dir (end of chain)
@@ -96,14 +96,14 @@ class Fat32:
         )
 
         # Boot sector with BPB
-        bs = bytearray(SECTOR)
+        bs = bytearray(SECTOR_SIZE)
         bs[0:3] = b"\xeb\x58\x90"
         bs[3:11] = oem[:8].ljust(8)
         struct.pack_into(
             "<HBHBHHBHHHII",
             bs,
             11,
-            SECTOR,
+            SECTOR_SIZE,
             spc,
             reserved,
             nfats,
@@ -126,7 +126,7 @@ class Fat32:
         self.boot_sector = bytes(bs)
 
         # Zero the reserved area (the image may contain old garbage)
-        self._write(0, b"\0" * (reserved * SECTOR))
+        self._write(0, b"\0" * (reserved * SECTOR_SIZE))
         self.formatted = True
 
     # ---- low-level helpers ---------------------------------------------
@@ -135,7 +135,7 @@ class Fat32:
         self.dev.write(data)
 
     def _cluster_off(self, c):
-        return (self.data_start + (c - 2) * self.spc) * SECTOR
+        return (self.data_start + (c - 2) * self.spc) * SECTOR_SIZE
 
     def _alloc(self, n):
         """Allocate n contiguous clusters, link them in the FAT, return first."""
@@ -341,16 +341,16 @@ class Fat32:
                 self._write(self._cluster_off(c), chunk)
 
         fat_bytes = struct.pack(f"<{len(self.fat)}I", *self.fat)
-        fat_bytes = fat_bytes.ljust(self.fatsz * SECTOR, b"\0")
+        fat_bytes = fat_bytes.ljust(self.fatsz * SECTOR_SIZE, b"\0")
         for i in range(self.nfats):
-            self._write((self.reserved + i * self.fatsz) * SECTOR, fat_bytes)
+            self._write((self.reserved + i * self.fatsz) * SECTOR_SIZE, fat_bytes)
 
         free = self.clusters - (self.next_free - 2)
-        fsinfo = bytearray(SECTOR)
+        fsinfo = bytearray(SECTOR_SIZE)
         struct.pack_into("<I", fsinfo, 0, 0x41615252)
         struct.pack_into("<I", fsinfo, 484, 0x61417272)
         struct.pack_into("<II", fsinfo, 488, free, self.next_free)
         fsinfo[510:512] = b"\x55\xaa"
         for base in (0, 6):  # primary and backup copies
-            self._write(base * SECTOR, self.boot_sector)
-            self._write((base + 1) * SECTOR, bytes(fsinfo))
+            self._write(base * SECTOR_SIZE, self.boot_sector)
+            self._write((base + 1) * SECTOR_SIZE, bytes(fsinfo))

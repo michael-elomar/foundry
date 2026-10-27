@@ -1,4 +1,4 @@
-SECTOR = 512
+SECTOR_SIZE = 512  # in bytes
 
 
 def size_to_sectors(size: str):
@@ -31,4 +31,4 @@ def size_to_sectors(size: str):
     size_in_bytes = int(int(size) * mult)
 
     # divide by sector size to get number of sectors, no remainder
-    return size_in_bytes // SECTOR
+    return size_in_bytes // SECTOR_SIZE

@@ -20,9 +20,7 @@ linux: linux-config
 	$(Q) cp -af $(LINUX_BUILD_DIR)/vmlinux $(STAGING_DIR)/boot
 	$(Q) cp -af $(LINUX_BUILD_DIR)/.config $(LINUX_BUILD_DIR)/linux.config
 	$(Q) echo "$(LINUX_ARCH)" > $(LINUX_BUILD_DIR)/linuxarch
-	$(Q) cp -af $(STAGING_DIR)/boot/broadcom/*.dtb $(STAGING_DIR)/boot/
-	$(Q) rm -rf $(STAGING_DIR)/boot/broadcom
-	$(Q) chmod +x $(STAGING_DIR)/boot/*.dtb
+	$(Q) chmod +x $(STAGING_DIR)/boot/*/*.dtb
 	$(Q) chmod +x $(STAGING_DIR)/boot/$(LINUX_IMAGE)
 	$(Q) chmod +x $(STAGING_DIR)/boot/overlays/*.dtbo
 	@echo "Linux kernel built"

@@ -4,7 +4,7 @@ import mbr
 import sys
 import argparse
 
-from utils import SECTOR, size_to_sectors
+from utils import SECTOR_SIZE, size_to_sectors
 import fat32
 import extfs
 import offset_file
@@ -58,16 +58,25 @@ def main(argv=None):
     disk_image = mbr.MBRDiskImage(fmt_size, mbr.DEADBEEF)
 
     with open(options["output"], "wb+") as file:
-        file.truncate(disk_image.total_size * SECTOR)
+        file.truncate(disk_image.total_size * SECTOR_SIZE)
         file.write(disk_image.toBytes())
 
-        boot_partition = offset_file.OffsetFile(file, 2048 * SECTOR, 1024000 * SECTOR)
-        fat32_fs = fat32.Fat32(boot_partition, 2048)
-        fat32_fs.format(label="BOOT_PARTITION")
+        BOOT_PARITION_SIZE = size_to_sectors(sizes[0])
+
+        boot_partition = offset_file.OffsetFile(
+            file, mbr.START_SECTOR * SECTOR_SIZE, BOOT_PARITION_SIZE * SECTOR_SIZE
+        )
+        fat32_fs = fat32.Fat32(boot_partition, mbr.START_SECTOR)
+        fat32_fs.format(label="Boot")
         fat32_fs.add_tree(dirs[0])
         fat32_fs.close()
 
-        roots_partition = offset_file.OffsetFile(file, 1026048 * SECTOR, 2045952 * SECTOR)
+        ROOT_PARTITION_OFFSET = BOOT_PARITION_SIZE + mbr.START_SECTOR
+        ROOT_PARTITION_SIZE = size_to_sectors(sizes[1]) - mbr.START_SECTOR
+
+        roots_partition = offset_file.OffsetFile(
+            file, ROOT_PARTITION_OFFSET * SECTOR_SIZE, ROOT_PARTITION_SIZE * SECTOR_SIZE
+        )
         ext2_fs = extfs.Ext2(roots_partition)
         ext2_fs.format(label="Linux")
         ext2_fs.add_tree(dirs[1])  # tree structure preserved
