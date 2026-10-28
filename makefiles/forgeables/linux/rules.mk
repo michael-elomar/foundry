@@ -13,14 +13,14 @@ linux: linux-config
 	else \
 		echo "CONFIG_MODULES not set in kernel config, ignoring"; \
 	fi
-	@mkdir -p $(STAGING_DIR)/boot
+	@mkdir -p $(TARGET_STAGING_DIR)/boot
 	$(call linux-copy-images)
 	$(Q) $(MAKE) $(LINUX_MAKE_ARGS) dtbs_install
 	$(Q) $(MAKE) $(LINUX_MAKE_ARGS) headers_install
-	$(Q) cp -af $(LINUX_BUILD_DIR)/vmlinux $(STAGING_DIR)/boot
+	$(Q) cp -af $(LINUX_BUILD_DIR)/vmlinux $(TARGET_STAGING_DIR)/boot
 	$(Q) cp -af $(LINUX_BUILD_DIR)/.config $(LINUX_BUILD_DIR)/linux.config
 	$(Q) echo "$(LINUX_ARCH)" > $(LINUX_BUILD_DIR)/linuxarch
-	$(Q) chmod +x $(STAGING_DIR)/boot/*/*.dtb
-	$(Q) chmod +x $(STAGING_DIR)/boot/$(LINUX_IMAGE)
-	$(Q) chmod +x $(STAGING_DIR)/boot/overlays/*.dtbo
+	$(Q) chmod +x $(TARGET_STAGING_DIR)/boot/*/*.dtb
+	$(Q) chmod +x $(TARGET_STAGING_DIR)/boot/$(LINUX_IMAGE)
+	$(Q) chmod +x $(TARGET_STAGING_DIR)/boot/overlays/*.dtbo
 	@echo "Linux kernel built"

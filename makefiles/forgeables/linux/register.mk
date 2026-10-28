@@ -43,9 +43,9 @@ endif
 LINUX_MAKE_ARGS := \
 	ARCH="$(LINUX_ARCH)" \
 	CROSS_COMPILE=$(TARGET_LINUX_CROSS) \
-	INSTALL_MOD_PATH=$(STAGING_DIR) \
-	INSTALL_DTBS_PATH=$(STAGING_DIR)/boot \
-	INSTALL_HDR_PATH=$(STAGING_DIR)/usr \
+	INSTALL_MOD_PATH=$(TARGET_STAGING_DIR) \
+	INSTALL_DTBS_PATH=$(TARGET_STAGING_DIR)/boot \
+	INSTALL_HDR_PATH=$(TARGET_STAGING_DIR)/usr \
 	-C $(BUILD_DIR)/$(KERNEL_SRC_FOLDER) \
 	O="$(LINUX_BUILD_DIR)" \
 	$(TARGET_LINUX_MAKE_BUILD_ARGS) $(LOCAL_LINUX_MAKE_BUILD_ARGS) \
@@ -58,7 +58,7 @@ __download_kernel = \
 linux-copy-image = \
 	$(if $(call streq,$(LINUX_IMAGE),$1), \
 		if [ -f $(LINUX_BUILD_DIR)/arch/$(LINUX_SRCARCH)/boot/$1 ]; then \
-			cp -af $(LINUX_BUILD_DIR)/arch/$(LINUX_SRCARCH)/boot/$1 $(STAGING_DIR)/boot; \
+			cp -af $(LINUX_BUILD_DIR)/arch/$(LINUX_SRCARCH)/boot/$1 $(TARGET_STAGING_DIR)/boot; \
 		fi; \
 	)
 
@@ -71,7 +71,7 @@ define linux-copy-images
 endef
 
 
-LINUX_SDK_DIR := $(STAGING_DIR)/usr/src/linux-sdk
+LINUX_SDK_DIR := $(TARGET_STAGING_DIR)/usr/src/linux-sdk
 define linux-gen-sdk
 	$(Q) :> $(LINUX_BUILD_DIR)/sdksrcfiles
 	$(Q) :> $(LINUX_BUILD_DIR)/sdkobjfiles

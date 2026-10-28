@@ -75,6 +75,7 @@ def main(argv=None):
     env["BUILD_SYSTEM"] = str(BUILD_SYSTEM)
     env["WORKSPACE"] = str(WORKSPACE)
     env["JOBS"] = options["build_jobs"]
+    env["TARGET_PRODUCT"] = options["product"]
 
     if options["dry_run"]:
         with open("Makefile.txt", "w") as file:
