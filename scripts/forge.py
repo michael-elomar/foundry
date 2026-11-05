@@ -6,7 +6,7 @@ import pathlib
 import subprocess
 import sys
 
-from trace import *
+from log import *
 
 
 def check_product(product, products_path):
