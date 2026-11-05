@@ -51,7 +51,7 @@ __create_dirs = \
 )
 
 __copy_skel = \
-	$(shell cp -r $(1)/* $(STAGING_DIR))
+	$(shell cp -r $(1)/* $(TARGET_STAGING_DIR))
 
 # Get the path of the current directory from which 'forge' is being called
 my-path = $(shell pwd)
