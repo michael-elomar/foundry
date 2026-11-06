@@ -1,10 +1,12 @@
 MKFS_SCRIPT := $(BUILD_SYSTEM)/scripts/mkimg.py
 
+ifndef TARGET_IMAGE_PARTITIONS
+TARGET_IMAGE_PARTITIONS := ext2 1G $(TARGET_STAGING_DIR)
+endif
+
 .PHONY: image
 image:
-	@$(MKFS_SCRIPT) --partitions \
-		fat32 200M $(TARGET_STAGING_DIR)/boot \
-		ext2 500M $(TARGET_STAGING_DIR) \
-		--output $(TARGET_PRODUCT_OUT_DIR)/avalon.img
-
+	@$(MKFS_SCRIPT) \
+		--partitions $(TARGET_IMAGE_PARTITIONS) \
+		--output $(TARGET_PRODUCT_OUT_DIR)/$(TARGET_IMAGE_NAME)
 
